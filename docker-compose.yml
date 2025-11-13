@@ -1,0 +1,38 @@
+# docker-compose.yml
+
+version: "3.8"
+
+services:
+  # 1. ฐานข้อมูล (Database Service)
+  db:
+    image: postgres:14-alpine
+    restart: always
+    container_name: vulnshop_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: vulnshop_db
+    ports:
+      - "5433:5432" # 👈 External Port: 5433, Internal Port: 5432
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  # 2. เว็บแอปพลิเคชัน (Next.js Service)
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vulnshop_app
+    ports:
+      - "8888:3000" # 👈 External Port: 8888, Internal Port: 3000
+    volumes:
+      - .:/app
+      - /app/node_modules
+    env_file:
+      - .env
+    depends_on:
+      - db
+    command: npm run dev
+
+volumes:
+  db-data:
