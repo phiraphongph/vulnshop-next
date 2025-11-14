@@ -1,4 +1,4 @@
--- สร้างตารางผู้ใช้งาน
+-- create table users
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
@@ -6,13 +6,35 @@ CREATE TABLE users (
     is_admin BOOLEAN DEFAULT FALSE
 );
 
--- เพิ่มผู้ใช้งานทั่วไป (Non-Admin)
+-- add sample users
 INSERT INTO users (username, password, is_admin)
 VALUES ('testuser', 'testpass', FALSE);
 
--- เพิ่มผู้ใช้งานที่เป็น Admin (เป้าหมายของการโจมตี)
+-- add admin user
 INSERT INTO users (username, password, is_admin)
 VALUES ('admin', 'adminpass', TRUE);
 
--- ตรวจสอบข้อมูลที่ถูกเพิ่ม
+CREATE TABLE reviews (
+    id SERIAL PRIMARY KEY,
+    product_id INT NOT NULL,
+    -- review_content คือคอลัมน์ที่จะเก็บ payload XSS 
+    review_content TEXT NOT NULL, 
+    reviewer_name VARCHAR(255),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+-- add sample reviews
+INSERT INTO reviews (product_id, review_content, reviewer_name)
+VALUES 
+(1, '555', 'Alice'),
+(2, '6555', 'Bob');
+
+CREATE TABLE IF NOT EXISTS products (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+
+-- verify inserted data
 SELECT * FROM users;
+SELECT * FROM reviews;
+SELECT * FROM products;
+

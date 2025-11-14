@@ -15,6 +15,7 @@ services:
     ports:
       - "5433:5432" # 👈 External Port: 5433, Internal Port: 5432
     volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - db-data:/var/lib/postgresql/data
 
   # 2. เว็บแอปพลิเคชัน (Next.js Service)
