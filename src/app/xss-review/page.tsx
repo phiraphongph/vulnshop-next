@@ -1,16 +1,11 @@
 "use client";
 import React, { useState } from "react";
 
-// โครงสร้างสำหรับเก็บข้อมูลรีวิว
+// review type
 interface Review {
   id: number;
   content: string;
 }
-
-/**
- * 💥 หน้าที่มีช่องโหว่ Stored XSS 💥
- * ช่องโหว่เกิดจากการใช้ dangerouslySetInnerHTML ในการแสดงผลข้อมูลที่มาจากผู้ใช้
- */
 export default function XssReviewPage() {
   const [newComment, setNewComment] = useState("");
   // จำลองการจัดเก็บรีวิว (ปกติจะอยู่ใน Database)
@@ -24,6 +19,24 @@ export default function XssReviewPage() {
 
     if (newComment.trim() === "") return;
 
+    const reviewPaload = {
+      content: newComment,
+      name: "Test User",
+      productId: 1,
+    };
+    try {
+      const response = fetch("/api/review", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(reviewPaload),
+      });
+      const data = response.then((res) => res.json());
+      console.log("Response from server:", data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
     // 🔴 1. ช่องโหว่ (Storage Simulation): บันทึก Input ดิบลงใน "ฐานข้อมูล"
     const newId =
       comments.length > 0 ? comments[comments.length - 1].id + 1 : 1;
