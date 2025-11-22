@@ -1,18 +1,33 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // review type
 interface Review {
   id: number;
-  content: string;
+  review_content: string; // **เปลี่ยน 'content' เป็น 'review_content'**
+  product_id: number;
+  reviewer_name: string;
 }
 export default function XssReviewPage() {
   const [newComment, setNewComment] = useState("");
   // จำลองการจัดเก็บรีวิว (ปกติจะอยู่ใน Database)
-  const [comments, setComments] = useState<Review[]>([
-    { id: 1, content: "สินค้าดีมาก! จัดส่งรวดเร็ว" },
-    { id: 2, content: "บริการลูกค้าดีเยี่ยม" },
-  ]);
+  const [comments, setComments] = useState<Review[]>([]);
+
+  // ฟังก์ชันดึงรีวิวจากเซิร์ฟเวอร์ (API Route)
+
+  const fetchReviews = async () => {
+    try {
+      const response = await fetch("/api/review");
+      const data = await response.json();
+      console.log("Fetched reviews:", data.reviews);
+      setComments(data.reviews);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    }
+  };
+  useEffect(() => {
+    fetchReviews();
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,11 +52,10 @@ export default function XssReviewPage() {
     } catch (error) {
       console.error("Error:", error);
     }
-    // 🔴 1. ช่องโหว่ (Storage Simulation): บันทึก Input ดิบลงใน "ฐานข้อมูล"
-    const newId =
-      comments.length > 0 ? comments[comments.length - 1].id + 1 : 1;
-    setComments([...comments, { id: newId, content: newComment }]);
+    if (newComment.trim() === "") return;
     setNewComment("");
+    // ดึงรีวิวใหม่หลังจากเพิ่มรีวิวสำเร็จ
+    fetchReviews();
   };
 
   /**
@@ -51,7 +65,7 @@ export default function XssReviewPage() {
   const ReviewItem = ({ review }: { review: Review }) => (
     <div className="p-4 border border-gray-200 rounded-xl mb-3 bg-white shadow-sm">
       <p className="text-gray-600 mb-2 text-sm font-medium">
-        รีวิว #{review.id}
+        รีวิว ID: {review.id}
       </p>
 
       {/* 💥 จุดอันตราย: dangerouslySetInnerHTML 💥
@@ -59,7 +73,7 @@ export default function XssReviewPage() {
       */}
       <div
         className="text-gray-800 text-lg"
-        dangerouslySetInnerHTML={{ __html: review.content }}
+        dangerouslySetInnerHTML={{ __html: review.review_content }}
       />
     </div>
   );
@@ -85,7 +99,7 @@ export default function XssReviewPage() {
             จากนั้นดูผลลัพธ์:
           </p>
           <code className="block bg-yellow-200 p-2 rounded text-sm overflow-x-auto">
-            &lt;img src=x onerror=alert('XSS-Stored-Executed')&gt;
+            &lt;img src=x onerror=alert("XSS-Stored-Executed")&gt;
           </code>
           <p className="mt-2 text-xs">
             (โค้ดนี้จะใช้ Tag &lt;img&gt; ที่มี Attribute onerror ซึ่งจะรัน
