@@ -28,10 +28,15 @@ VALUES
 (1, '555', 'Alice'),
 (2, '6555', 'Bob');
 
-CREATE TABLE IF NOT EXISTS products (
+CREATE TABLE products (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
+    product_name VARCHAR(255) NOT NULL
 );
+-- add sample products
+INSERT INTO products (product_name)
+VALUES 
+('Product A'),
+('Product B');
 
 -- verify inserted data
 SELECT * FROM users;

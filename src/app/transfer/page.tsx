@@ -8,6 +8,7 @@ export default function TransferPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
   };
+
   return (
     <div className="min-h-screen bg-gray-100 items-center justify-center">
       <h1 className="text-4xl font-extrabold text-gray-800">
