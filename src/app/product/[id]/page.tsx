@@ -118,18 +118,12 @@ export default function XssReviewPage({ params }: { params: { id: string } }) {
           </div>
         </div>
 
-        {/* ---------------------------------------------------- */}
         {/* คำแนะนำ Payload */}
-        {/* ---------------------------------------------------- */}
         <div className="p-4 mb-8 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded-md shadow-md">
           <h3 className="font-bold text-lg mb-2">Payload</h3>
           <code className="block bg-yellow-200 p-2 rounded text-sm overflow-x-auto">
             &lt;img src=x onerror=alert("XSS-Stored-Executed")&gt;
           </code>
-          <p className="mt-2 text-xs">
-            (โค้ดนี้จะใช้ Tag &lt;img&gt; ที่มี Attribute onerror ซึ่งจะรัน
-            JavaScript หากรูปภาพโหลดล้มเหลว)
-          </p>
         </div>
 
         {/* ---------------------------------------------------- */}
@@ -143,7 +137,7 @@ export default function XssReviewPage({ params }: { params: { id: string } }) {
             <textarea
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              placeholder="ป้อนรีวิว (รวมถึง Payload XSS ที่คุณต้องการทดสอบ)"
+              placeholder="ป้อนรีวิว ของคุณที่นี่..."
               rows={5}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 transition duration-150 text-gray-700"
               required

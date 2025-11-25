@@ -1,14 +1,8 @@
 // src/app/api/login/route.ts
 import { NextResponse } from "next/server";
 import { queryDB } from "@/utils/db";
+import { cookies } from "next/headers";
 
-/**
- * Vulnerable login API for vulnshop (DEMO only)
- * - Intentionally vulnerable to SQLi (string concatenation)
- * - Returns the executed query and DB results/errors to help demo and debug
- *
- * IMPORTANT: Use only in a controlled lab environment.
- */
 export async function POST(request: Request) {
   let username = "";
   let password = "";
@@ -41,16 +35,32 @@ export async function POST(request: Request) {
     // Run the vulnerable query
     const result = await queryDB(queryText);
 
-    // Return detailed info for demo: the raw query and rows
-    return NextResponse.json(
-      {
-        message: result.rowCount > 0 ? "Login matched rows" : "No rows matched",
-        executedQuery: queryText,
-        rowCount: result.rowCount,
-        rows: result.rows, // 🔥 exposes DB rows — OK only in lab
-      },
-      { status: result.rowCount > 0 ? 200 : 401 }
-    );
+    if (result.rowCount > 0) {
+      const user = result.rows[0];
+      // เตรียมตัวแปร response ไว้ก่อน (ยังไม่ return)
+      const response = NextResponse.json(
+        {
+          message:
+            result.rowCount > 0 ? "Login matched rows" : "No rows matched",
+          executedQuery: queryText,
+          rowCount: result.rowCount,
+          rows: result.rows,
+        },
+        { status: result.rowCount > 0 ? 200 : 401 }
+      );
+
+      // ใช้ response.cookies.set() แทน cookies().set()
+      response.cookies.set("session_token", user.username, {
+        httpOnly: false,
+        secure: false,
+        path: "/",
+        sameSite: "lax",
+      });
+
+      console.log(`[LOGIN SUCCESS] Cookie set for user: ${user.username}`);
+      // Return response ที่เรายัด Cookie ใส่ไปแล้ว
+      return response;
+    }
   } catch (error: any) {
     // Return DB error details for debugging (again: lab only)
     console.error("Database error during query execution:", error);
