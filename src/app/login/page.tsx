@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 // URL ของ API Login Backend (Next.js API route)
@@ -9,6 +10,7 @@ const LOGIN_API_URL = "/api/login";
  * หน้าที่: รับ input จากผู้ใช้และส่งไปยัง Backend (route.ts)
  */
 export default function LoginPage() {
+  const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   // ข้อความแนะนำ Payload สำหรับการโจมตี
@@ -35,10 +37,10 @@ export default function LoginPage() {
       const data = await response.json();
 
       setMessage(data.message);
-
       if (response.ok) {
         // Login สำเร็จ (รวมถึงการ Bypass ด้วย Payload)
         setIsError(false);
+        router.push("/shop");
       } else {
         // Login ล้มเหลว (401 Unauthorized หรือ 500 Internal Server Error)
         setIsError(true);

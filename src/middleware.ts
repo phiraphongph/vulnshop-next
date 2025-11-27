@@ -5,16 +5,30 @@ import type { NextRequest } from "next/server";
 const protectedRoutes = ["/shop", "/transfer", "/product"];
 
 export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  // ตรวจสอบว่าเป็นเส้นทางที่ต้องป้องกันหรือไม่
-  if (protectedRoutes.some((route) => pathname.startsWith(route))) {
+  const path = request.nextUrl.pathname;
+
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    path.startsWith(route)
+  );
+
+  if (isProtectedRoute) {
     const sessionToken = request.cookies.get("session_token")?.value;
+
     if (!sessionToken) {
-      // ถ้าไม่มี session_token ให้รีไดเร็กต์ไปที่หน้า login
-      const loginUrl = new URL("/login", request.url);
-      return NextResponse.redirect(loginUrl);
+      return NextResponse.redirect(new URL("/login", request.url));
     }
   }
 
   return NextResponse.next();
 }
+
+// Config เพื่อระบุว่า Middleware นี้จะทำงานที่ Path ไหนบ้าง
+// (ใส่ matcher เพื่อไม่ให้มันทำงานกับไฟล์ static, image, หรือ api ที่ไม่จำเป็น)
+// export const config = {
+//   matcher: [
+//     '/shop/:path*',
+//     '/transfer/:path*',
+//     '/product/:path*',
+//     '/login'
+//   ],
+// }

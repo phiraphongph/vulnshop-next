@@ -49,7 +49,6 @@ export async function POST(request: Request) {
         { status: result.rowCount > 0 ? 200 : 401 }
       );
 
-      // ใช้ response.cookies.set() แทน cookies().set()
       response.cookies.set("session_token", user.username, {
         httpOnly: false,
         secure: false,
@@ -60,6 +59,16 @@ export async function POST(request: Request) {
       console.log(`[LOGIN SUCCESS] Cookie set for user: ${user.username}`);
       // Return response ที่เรายัด Cookie ใส่ไปแล้ว
       return response;
+    } else {
+      return NextResponse.json(
+        {
+          message: "Invalid username or password.",
+          executedQuery: queryText,
+          rowCount: result.rowCount,
+          rows: result.rows,
+        },
+        { status: 401 }
+      );
     }
   } catch (error: any) {
     // Return DB error details for debugging (again: lab only)
