@@ -3,16 +3,16 @@ CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    is_admin BOOLEAN DEFAULT FALSE
+    is_admin BOOLEAN DEFAULT FALSE,
+    balance DECIMAL(10, 2) DEFAULT 0.00
 );
 
--- add sample users
-INSERT INTO users (username, password, is_admin)
-VALUES ('testuser', 'testpass', FALSE);
-
--- add admin user
-INSERT INTO users (username, password, is_admin)
-VALUES ('admin', 'adminpass', TRUE);
+-- add users
+INSERT INTO users (username, password, is_admin, balance)
+VALUES 
+('testuser', 'testpass', FALSE, 100.00),
+('admin', 'adminpass', TRUE, 1000.00),
+('hacker', 'hackerpass', FALSE, 0.00);
 
 CREATE TABLE reviews (
     id SERIAL PRIMARY KEY,
@@ -30,13 +30,15 @@ VALUES
 
 CREATE TABLE products (
     id SERIAL PRIMARY KEY,
-    product_name VARCHAR(255) NOT NULL
+    product_name VARCHAR(255) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL DEFAULT 0.00
 );
 -- add sample products
-INSERT INTO products (product_name)
+INSERT INTO products (product_name, price)
 VALUES 
-('Product A'),
-('Product B');
+('Product A',3000.00),
+('Product B',4500.00),
+('Product C',1500.00);
 
 -- verify inserted data
 SELECT * FROM users;

@@ -1,6 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
-
+import React, { useEffect, useState, use } from "react";
 // type
 interface Review {
   id: number;
@@ -11,12 +10,27 @@ interface Review {
 interface Product {
   id: number;
   product_name: string;
+  price: number;
 }
-export default function XssReviewPage({ params }: { params: { id: string } }) {
-  const productId = parseInt(params.id, 10);
+export default function XssReviewPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = use(params);
+  const productId = parseInt(id, 10);
   const [newComment, setNewComment] = useState("");
   const [product, setProduct] = useState<Product | null>(null);
   const [comments, setComments] = useState<Review[]>([]);
+
+  //ฟังก์ชันช่วยอ่าน Cookie ในฝั่ง Client
+  const getCookie = (name: string) => {
+    if (typeof document === "undefined") return null; // กัน Error ตอน Server Render
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop()?.split(";").shift();
+    return null;
+  };
 
   // ฟังก์ชันดึงรีวิวจากเซิร์ฟเวอร์ (API Route)
 
@@ -44,6 +58,32 @@ export default function XssReviewPage({ params }: { params: { id: string } }) {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const handleBuy = async () => {
+    const cookieUserId = getCookie("user_id");
+    console.log("Cookie user_id:", cookieUserId);
+    const userIdToSend = cookieUserId ? parseInt(cookieUserId) : 0;
+    console.log("User ID to send:", userIdToSend);
+
+    try {
+      const purchasePayload = {
+        productId: productId,
+        quantity: 1,
+        userId: userIdToSend, // ส่ง userId ไปด้วย
+      };
+      const response = await fetch("/api/buy", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(purchasePayload),
+      });
+      const data = await response.json();
+      console.log("Response from server:", data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -111,9 +151,15 @@ export default function XssReviewPage({ params }: { params: { id: string } }) {
               {product ? ` ${product.product_name}` : ""}
             </h1>
             <p className="text-gray-500 mb-4">รหัสสินค้า: {productId}</p>
-            <div className="text-green-600 font-bold text-xl">฿ 990.00</div>
-            <button className="mt-4 px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800">
-              ใส่ตะกร้า
+            <div className="text-green-600 font-bold text-xl">
+              ฿ {product?.price}
+            </div>
+            <button
+              onClick={handleBuy}
+              type="button"
+              className="mt-4 px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
+            >
+              ซื้อเลย
             </button>
           </div>
         </div>

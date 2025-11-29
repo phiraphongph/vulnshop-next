@@ -6,6 +6,7 @@ import Link from "next/link";
 interface Product {
   id: number;
   product_name: string;
+  price: number;
 }
 
 // 1. ย้าย Component ย่อยออกมาข้างนอก (Performance)
@@ -15,7 +16,8 @@ const ProductItem = ({ product }: { product: Product }) => (
       <p className="text-gray-600 mb-2 text-sm font-medium">
         {/* 2. แก้ไขการแสดงผลให้ถูกต้อง (Logic) */}
         สินค้า ID: {product.id} <br />
-        ชื่อสินค้า: {product.product_name}
+        ชื่อสินค้า: {product.product_name} <br />
+        ราคา: {product.price} บาท
       </p>
       <img
         src={`https://picsum.photos/400/300?random=${product.id}`}

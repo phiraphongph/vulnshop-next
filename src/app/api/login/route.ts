@@ -56,6 +56,20 @@ export async function POST(request: Request) {
         sameSite: "lax",
       });
 
+      response.cookies.set("user_id", String(user.id), {
+        httpOnly: false,
+        secure: false,
+        path: "/",
+        sameSite: "lax",
+      });
+
+      response.cookies.set("is_admin", String(user.is_admin), {
+        httpOnly: false,
+        secure: false,
+        path: "/",
+        sameSite: "lax",
+      });
+
       console.log(`[LOGIN SUCCESS] Cookie set for user: ${user.username}`);
       // Return response ที่เรายัด Cookie ใส่ไปแล้ว
       return response;
