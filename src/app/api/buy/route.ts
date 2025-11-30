@@ -10,12 +10,25 @@ export async function POST(request: Request) {
   //   const cookieStore = await cookies();
   //   const userIdCookie = cookieStore.get("user_id");
   //   const userId = userIdCookie ? Number(userIdCookie.value) : 0;
+  const contentType = request.headers.get("content-type") || "";
   try {
-    const body = await request.json();
-    productId = typeof body.productId === "number" ? body.productId : 0;
-    quantity = typeof body.quantity === "number" ? body.quantity : 0;
-    // ดึง userId จาก body request ลบทิ้งถ้าอยากแก้ IDOR แต่น่าจะยังมี Cookie Tampering อยู่
-    userId = typeof body.userId === "number" ? body.userId : 0;
+    if (contentType.includes("application/json")) {
+      const body = await request.json();
+      productId = typeof body.productId === "number" ? body.productId : 0;
+      quantity = typeof body.quantity === "number" ? body.quantity : 0;
+      // ดึง userId จาก body request ลบทิ้งถ้าอยากแก้ IDOR แต่น่าจะยังมี Cookie Tampering อยู่
+      userId = typeof body.userId === "number" ? body.userId : 0;
+    } else if (contentType.includes("application/x-www-form-urlencoded")) {
+      const formData = await request.formData();
+      productId = Number(formData.get("productId")) || 0;
+      quantity = Number(formData.get("quantity")) || 0;
+      userId = Number(formData.get("userId")) || 0;
+    } else {
+      return NextResponse.json(
+        { message: "Unsupported content type." },
+        { status: 415 }
+      );
+    }
   } catch (e) {
     return NextResponse.json(
       { message: "Invalid request body." },
@@ -28,10 +41,12 @@ export async function POST(request: Request) {
       { status: 400 }
     );
   }
+
   try {
     const product = await queryDB(
       `SELECT * FROM products WHERE id = ${productId};`
     );
+
     const pricePerItem = product.rows.length ? product.rows[0].price : null;
     if (pricePerItem === null) {
       return NextResponse.json(
