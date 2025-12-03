@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     // Run the vulnerable query
     const result = await queryDB(queryText);
 
-    if (result.rowCount > 0) {
+    if (result.rowCount && result.rowCount > 0) {
       const user = result.rows[0];
       // เตรียมตัวแปร response ไว้ก่อน (ยังไม่ return)
       const response = NextResponse.json(
