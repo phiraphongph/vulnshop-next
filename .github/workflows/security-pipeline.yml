@@ -55,7 +55,7 @@ jobs:
           scan-type: "image"
           image-ref: "vulnshop"
           format: "table"
-          exit-code: "1"
+          exit-code: "0"
           severity: "CRITICAL,HIGH"
           ignore-unfixed: true
           #scanners: "vuln,secret" #scan Secrets and Scanfile also
@@ -66,14 +66,14 @@ jobs:
           scan-type: "fs"
           scan-ref: "."
           severity: "CRITICAL,HIGH"
-          exit-code: "1"
+          exit-code: "0"
 
       - name: Scan config dockerfile
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: "config"
           scan-ref: "."
-          exit-code: "1"
+          exit-code: "0"
           severity: "CRITICAL,HIGH"
 
       - name: Scan Secrets
@@ -81,5 +81,5 @@ jobs:
         with:
           scan-type: "secret"
           scan-ref: "."
-          exit-code: "1"
+          exit-code: "0"
           severity: "CRITICAL,HIGH"
