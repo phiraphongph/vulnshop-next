@@ -6,10 +6,10 @@ VulnShop เป็น web application ที่มีช่องโหว่ท
 - Framework Next.js
 - Database PostgreSQL
 - CICD & Security Tools
--- GitHub Actions
--- npm audit
--- Trivy
--- ESLint 
+ -- GitHub Actions
+ -- npm audit
+ -- Trivy
+ -- ESLint 
 
 ## วิธีติดตั้งและใช้งาน
 **Clone Repository:**
