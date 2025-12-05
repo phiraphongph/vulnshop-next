@@ -25,10 +25,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # lint (Static Code Analysis)
       - name: Run Linting
         run: npm run lint
         continue-on-error: true # continue when small error
 
+      # audit (Dependentcy Vulnerability Scan)
       - name: Run Security Audit
         run: npm audit
         continue-on-error: true # continue when small error
@@ -47,8 +49,7 @@ jobs:
           load: true
           tags: vulnshop
 
-      # trivy scan
-
+      # trivy
       - name: Scan Docker Image
         uses: aquasecurity/trivy-action@master
         with:
