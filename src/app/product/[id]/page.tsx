@@ -80,6 +80,7 @@ export default function XssReviewPage({
       });
       const data = await response.json();
       console.log("Response from server:", data);
+      alert("ซื้อสินค้าสำเร็จ!,data=" + JSON.stringify(data));
     } catch (error) {
       console.error("Error:", error);
     }

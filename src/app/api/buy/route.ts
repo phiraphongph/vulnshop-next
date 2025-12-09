@@ -57,13 +57,11 @@ export async function POST(request: Request) {
     const totalPrice = pricePerItem * quantity;
 
     const user = await queryDB(`SELECT * FROM users WHERE id = ${userId};`);
-    const admin = await queryDB(`SELECT * FROM users WHERE id = 2;`);
+
     if (user.rows.length === 0) {
       return NextResponse.json({ message: "User not found." }, { status: 404 });
     }
-    console.log(user.rows[0].balance);
-    console.log(totalPrice);
-    console.log(user.rows[0].username);
+
     if (user.rows[0].balance < totalPrice) {
       return NextResponse.json(
         { message: "จำนวนเงินไม่เพียงพอ" },
@@ -74,7 +72,9 @@ export async function POST(request: Request) {
       await queryDB(
         `UPDATE users SET balance = ${newBalance} WHERE id = ${userId};`
       );
+      const admin = await queryDB(`SELECT * FROM users WHERE id = 2;`);
       const currentAdminBalance = Number(admin.rows[0].balance);
+
       const newBalanceAdmin = currentAdminBalance + totalPrice;
       await queryDB(
         `UPDATE users SET balance = ${newBalanceAdmin} WHERE id = 2;`
