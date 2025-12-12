@@ -89,4 +89,4 @@ jobs:
           LINE_TOKEN: ${{ secrets.LINE_TOKEN }}
         run: |
           pip install requests
-          python3 send_line.py
+          python3 .github/scripts/send_line.py
