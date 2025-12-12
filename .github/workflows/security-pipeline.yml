@@ -83,10 +83,10 @@ jobs:
 
       - name: Send Line Notification
         if: (env.audit_critical != '0' || env.audit_high != '0')
-        uses: actions/setup-python@v4
         env:
           AUDIT_CRITICAL: ${{ env.audit_critical }}
           AUDIT_HIGH: ${{ env.audit_high }}
           LINE_TOKEN: ${{ secrets.LINE_TOKEN }}
-        run: pip install requests
+        run: |
+          pip install requests
           python3 send_line.py
