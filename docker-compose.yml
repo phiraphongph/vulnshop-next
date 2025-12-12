@@ -33,7 +33,8 @@ services:
       - .env
     depends_on:
       - db
-    command: npm run dev
+    command: npm run dev # ใช้สำหรับโหมดพัฒนา (Development Mode)
+    # command: /bin/sh -c "npm run build && npm start" # ใช้สำหรับโหมดโปรดักชัน (Production Mode)
 
 volumes:
   db-data:

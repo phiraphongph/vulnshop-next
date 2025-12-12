@@ -5,11 +5,12 @@ import { cookies } from "next/headers";
 export async function POST(request: Request) {
   let productId = 0;
   let quantity = 0;
-  let userId = 0;
+  // let userId = 0;
   // ดึง user_id จาก cookie
-  //   const cookieStore = await cookies();
-  //   const userIdCookie = cookieStore.get("user_id");
-  //   const userId = userIdCookie ? Number(userIdCookie.value) : 0;
+  const cookieStore = await cookies();
+  const userIdCookie = cookieStore.get("user_id");
+  const userId = userIdCookie ? Number(userIdCookie.value) : 0;
+  console.log("Cookie user_id in API:", userId);
   const contentType = request.headers.get("content-type") || "";
   try {
     if (contentType.includes("application/json")) {
@@ -17,12 +18,13 @@ export async function POST(request: Request) {
       productId = typeof body.productId === "number" ? body.productId : 0;
       quantity = typeof body.quantity === "number" ? body.quantity : 0;
       // ดึง userId จาก body request ลบทิ้งถ้าอยากแก้ IDOR แต่น่าจะยังมี Cookie Tampering อยู่
-      userId = typeof body.userId === "number" ? body.userId : 0;
+      // userId = typeof body.userId === "number" ? body.userId : 0;
     } else if (contentType.includes("application/x-www-form-urlencoded")) {
       const formData = await request.formData();
       productId = Number(formData.get("productId")) || 0;
       quantity = Number(formData.get("quantity")) || 0;
-      userId = Number(formData.get("userId")) || 0;
+      console.log("Form Data userId:", formData.get("userId"));
+      // userId = Number(formData.get("userId")) || 0;
     } else {
       return NextResponse.json(
         { message: "Unsupported content type." },

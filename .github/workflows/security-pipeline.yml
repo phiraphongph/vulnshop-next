@@ -32,7 +32,8 @@ jobs:
 
       # audit (Dependentcy Vulnerability Scan)
       - name: Run Security Audit
-        run: npm audit
+        run: npm audit --audit-level=high --json > audit-report.json || true
+
         continue-on-error: true # continue when small error
 
       - name: Build Application
@@ -56,6 +57,7 @@ jobs:
           scan-type: "image"
           image-ref: "vulnshop"
           format: "table"
+          output: "trivy-report.txt"
           exit-code: "0"
           severity: "CRITICAL,HIGH"
           ignore-unfixed: true
@@ -70,3 +72,22 @@ jobs:
           exit-code: "0"
           scanners: "vuln,secret" #scan Secrets and Scanfile also
           format: "table"
+
+      - name: count audit issues
+        id: count_audit
+        run: |
+          audit_critical=$(jq '.metadata.vulnerabilities.critical // 0' audit-report.json)
+          echo "audit_critical=$audit_critical" >> $GITHUB_ENV
+          audit_high=$(jq '.metadata.vulnerabilities.high // 0' audit-report.json)
+          echo "audit_high=$audit_high" >> $GITHUB_ENV
+
+      - name: Send Line Notification
+        if: (env.audit_critical != '0' || env.audit_high != '0')
+        uses: actions/setup
+        env:
+          AUDIT_CRITICAL: ${{ env.audit_critical }}
+          AUDIT_HIGH: ${{ env.audit_high }}
+          LINE_TOKEN: ${{ secrets.LINE_TOKEN }}
+        run: |
+          pip install requests
+          python3 send_line.py
