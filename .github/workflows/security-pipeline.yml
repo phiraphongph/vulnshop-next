@@ -88,6 +88,5 @@ jobs:
           AUDIT_CRITICAL: ${{ env.audit_critical }}
           AUDIT_HIGH: ${{ env.audit_high }}
           LINE_TOKEN: ${{ secrets.LINE_TOKEN }}
-        run: |
-          pip install requests
+        run: pip install requests
           python3 send_line.py
