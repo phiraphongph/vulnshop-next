@@ -46,7 +46,7 @@ def send_line_push(user_id, message_text):
 
 # --- ส่วนของการเรียกใช้งาน ---
 if __name__ == "__main__":
-    # ใส่ User ID ที่หามาได้ (Uxxxxxxxx...)
+    # ใส่ User ID
     TARGET_USER_ID = "U4e3e8a65318eff5ae3f9d64647c7e35a" 
     
     num_audit_cri = os.environ.get("AUDIT_CRITICAL", "0")
