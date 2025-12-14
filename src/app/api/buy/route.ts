@@ -14,12 +14,15 @@ export async function POST(request: Request) {
   const contentType = request.headers.get("content-type") || "";
   try {
     if (contentType.includes("application/json")) {
+      // if the content type is JSON
       const body = await request.json();
       productId = typeof body.productId === "number" ? body.productId : 0;
       quantity = typeof body.quantity === "number" ? body.quantity : 0;
+      console.log("JSON Body userId:", body.userId);
       // ดึง userId จาก body request ลบทิ้งถ้าอยากแก้ IDOR แต่น่าจะยังมี Cookie Tampering อยู่
       // userId = typeof body.userId === "number" ? body.userId : 0;
     } else if (contentType.includes("application/x-www-form-urlencoded")) {
+      // if the content type is form
       const formData = await request.formData();
       productId = Number(formData.get("productId")) || 0;
       quantity = Number(formData.get("quantity")) || 0;
@@ -56,6 +59,7 @@ export async function POST(request: Request) {
         { status: 404 }
       );
     }
+
     const totalPrice = pricePerItem * quantity;
 
     const user = await queryDB(`SELECT * FROM users WHERE id = ${userId};`);
@@ -70,17 +74,20 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     } else {
+      // ปรับยอดเงินของผู้ใช้
       const newBalance = user.rows[0].balance - totalPrice;
       await queryDB(
         `UPDATE users SET balance = ${newBalance} WHERE id = ${userId};`
       );
+
+      // ปรับยอดเงินของแอดมิน (user_id = 2)
       const admin = await queryDB(`SELECT * FROM users WHERE id = 2;`);
       const currentAdminBalance = Number(admin.rows[0].balance);
-
       const newBalanceAdmin = currentAdminBalance + totalPrice;
       await queryDB(
         `UPDATE users SET balance = ${newBalanceAdmin} WHERE id = 2;`
       );
+
       return NextResponse.json(
         { message: "จ่ายเงินสำเร็จ", newBalance: newBalance },
         { status: 200 }
