@@ -58,7 +58,14 @@ const queryText = `SELECT * FROM users WHERE username = '${username}' AND passwo
 
 ### Remediation (วิธีการแก้)
 
-- เว้นว่างไว้ก่อน
+- **Fixed Code**
+
+```javascript
+const queryText = `SELECT * FROM users WHERE username = $1 AND password = $2;`;
+const values = [username, password];
+```
+
+- **Reference:** https://github.com/phiraphongph/vulnshop-next/pull/1/files
 
 ## VULN-02: RCE in Next.js via React Server Components
 
