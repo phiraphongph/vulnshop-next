@@ -25,15 +25,13 @@ export async function POST(request: Request) {
     );
   }
 
-  // intentionally vulnerable
-  const queryText = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}';`;
+  const queryText = `SELECT * FROM users WHERE username = $1 AND password = $2;`;
+  const values = [username, password];
 
-  // Log the raw query so the student can see it
   console.log("VULNERABLE QUERY:", queryText);
 
   try {
-    // Run the vulnerable query
-    const result = await queryDB(queryText);
+    const result = await queryDB(queryText, values);
 
     if (result.rowCount && result.rowCount > 0) {
       const user = result.rows[0];
