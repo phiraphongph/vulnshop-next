@@ -260,4 +260,13 @@ response.cookies.set("session_token", user.username, {
 
 ### Remediation (วิธีการแก้)
 
-- เว้นไว้ก่อน
+- นำ `dangerouslySetInnerHTML` ออก
+- **Fixed Code**
+
+```html
+<div className="text-gray-800 text-lg">{review.review_content}</div>
+```
+
+- **Reference:**
+
+https://github.com/phiraphongph/vulnshop-next/pull/2/files
