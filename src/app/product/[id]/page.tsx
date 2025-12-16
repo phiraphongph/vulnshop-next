@@ -121,10 +121,7 @@ export default function XssReviewPage({
         {review.reviewer_name}
       </p>
       {/* XSS */}
-      <div
-        className="text-gray-800 text-lg"
-        dangerouslySetInnerHTML={{ __html: review.review_content }}
-      />
+      <div className="text-gray-800 text-lg">{review.review_content}</div>
     </div>
   );
 
