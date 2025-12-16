@@ -3,7 +3,7 @@ import React, { useEffect, useState, use } from "react";
 // type
 interface Review {
   id: number;
-  review_content: string; // **เปลี่ยน 'content' เป็น 'review_content'**
+  review_content: string;
   product_id: number;
   reviewer_name: string;
 }
@@ -115,19 +115,12 @@ export default function XssReviewPage({
     fetchData();
   };
 
-  /**
-   * 🔴 2. ฟังก์ชันแสดงผลที่มีช่องโหว่ XSS
-   * React ไม่ได้ทำการ Encode Output ให้เมื่อใช้ dangerouslySetInnerHTML
-   */
   const ReviewItem = ({ review }: { review: Review }) => (
     <div className="p-4 border border-gray-200 rounded-xl mb-3 bg-white shadow-sm">
       <p className="text-gray-600 mb-2 text-sm font-medium">
         {review.reviewer_name}
       </p>
-
-      {/* 💥 จุดอันตราย: dangerouslySetInnerHTML 💥
-        Input ที่มีโค้ด Script จะถูกตีความเป็น HTML และถูกรัน
-      */}
+      {/* XSS */}
       <div
         className="text-gray-800 text-lg"
         dangerouslySetInnerHTML={{ __html: review.review_content }}
@@ -165,7 +158,7 @@ export default function XssReviewPage({
           </div>
         </div>
 
-        {/* คำแนะนำ Payload */}
+        {/* Payload */}
         <div className="p-4 mb-8 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded-md shadow-md">
           <h3 className="font-bold text-lg mb-2">Payload</h3>
           <code className="block bg-yellow-200 p-2 rounded text-sm overflow-x-auto">
@@ -173,9 +166,7 @@ export default function XssReviewPage({
           </code>
         </div>
 
-        {/* ---------------------------------------------------- */}
-        {/* ส่วนฟอร์มรีวิว */}
-        {/* ---------------------------------------------------- */}
+        {/* form */}
         <div className="p-6 bg-white rounded-xl shadow-lg mb-10">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4">
             ฝากรีวิวของคุณ
@@ -198,9 +189,7 @@ export default function XssReviewPage({
           </form>
         </div>
 
-        {/* ---------------------------------------------------- */}
-        {/* ส่วนแสดงผลรีวิวที่ถูกจัดเก็บ */}
-        {/* ---------------------------------------------------- */}
+        {/* review */}
         <h2 className="text-2xl font-semibold text-gray-800 mb-4">
           รีวิวทั้งหมด ({comments.length} รายการ)
         </h2>
