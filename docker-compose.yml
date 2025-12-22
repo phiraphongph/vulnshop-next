@@ -23,6 +23,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: vulnshopacr.azurecr.io/vulnshop:v1
     container_name: vulnshop_app
     ports:
       - "8888:3000" # 👈 External Port: 8888, Internal Port: 3000
