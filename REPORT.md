@@ -22,21 +22,35 @@
 
 ```bash
 
+
+
 sqlmap  -u  "http://localhost:8888/api/login"  --data='{"username":"test","password":"*"}'  --header="Content-Type: application/json"  --ignore-code=401,400
+
+
 
 # ผลลัพธ์: ยืนยันการมีช่องโหว่ และ database ที่ใช้คือ PostgreSQL
 
 
 
+
+
 sqlmap  -u  "http://localhost:8888/api/login"  --data='{"username":"test","password":"*"}'  --header="Content-Type: application/json"  --dbs
+
+
 
 # ผลลัพธ์: พบ 3 DB คือ information_schema, pg_catalog, public
 
 
 
+
+
 sqlmap  -u  "http://localhost:8888/api/login"  --data='{"username":"test","password":"*"}'  --header="Content-Type: application/json"  -D  public  --dump
 
+
+
 # ผลลัพธ์: สามารถดึงข้อมูลทุกตารางจาก public
+
+
 
 
 
@@ -50,7 +64,11 @@ sqlmap  -u  "http://localhost:8888/api/login"  --data='{"username":"test","passw
 
 ```
 
+
+
 sqlmap -u "http://localhost:8888/api/login" --data='{"username":"test","password":"*"}' --header="Content-Type: application/json" -D public --dump
+
+
 
 ```
 
@@ -100,17 +118,31 @@ Run Security Pipeline ใน GitHub Action โดยใช้คำสั่ง 
 
 ```bash
 
+
+
 next  15.5.1-canary.0  -  15.5.6
+
+
 
 Severity:  critical
 
+
+
 Next.js  is  vulnerable  to  RCE  in  React  flight  protocol  -[https://github.com/advisories/GHSA-9qr9-h5gf-34mp](https://github.com/advisories/GHSA-9qr9-h5gf-34mp)
+
+
 
 fix  available  via  `npm audit fix --force`
 
+
+
 Will  install  next@15.5.7,  which  is  outside  the  stated  dependency  range
 
+
+
 node_modules/next
+
+
 
 
 
@@ -132,11 +164,19 @@ node_modules/next
 
 ```
 
+
+
 "dependencies": {
+
+
 
 "next": "15.5.4"
 
+
+
 }
+
+
 
 ```
 
@@ -145,12 +185,16 @@ node_modules/next
 ทำการอัปเดต Package เป็นเวอร์ชัน `15.5.7` ตามคำแนะนำของ Security Advisory
 
 ```bash
-npm install next@15.5.7 react@latest react-dom@latest
+
+npm  install  next@15.5.7  react@latest  react-dom@latest
+
+
 
 ```
 
 - **Reference:**
-  https://github.com/phiraphongph/vulnshop-next/pull/3/files
+
+https://github.com/phiraphongph/vulnshop-next/pull/3/files
 
 ## VULN-03: Insecure Direct Object Reference (IDOR)
 
@@ -182,19 +226,35 @@ npm install next@15.5.7 react@latest react-dom@latest
 
 ```json
 
+
+
 POST /api/purchase
+
+
 
 Content-Type: application/json
 
+
+
 {
+
+
 
 "productId": 1,
 
+
+
 "quantity": 1,
+
+
 
 "userId": 2
 
+
+
 }
+
+
 
 ```
 
@@ -288,6 +348,9 @@ response.cookies.set("session_token", user.username, {
 
 - เว้นไว้ก่อน
 
+  - **Reference:**
+    https://github.com/phiraphongph/vulnshop-next/pull/4/files
+
 ## VULN-05: Stored Cross-Site Scripting (XSS)
 
 - **Severity:** **MEDIUM ** (CVSS v3.1: 5.4)
@@ -308,7 +371,11 @@ response.cookies.set("session_token", user.username, {
 
 ```
 
+
+
 <img src=x onerror=alert("XSS_Hacked")>
+
+
 
 ```
 
