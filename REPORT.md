@@ -24,7 +24,11 @@
 
 
 
+
+
 sqlmap  -u  "http://localhost:8888/api/login"  --data='{"username":"test","password":"*"}'  --header="Content-Type: application/json"  --ignore-code=401,400
+
+
 
 
 
@@ -34,7 +38,11 @@ sqlmap  -u  "http://localhost:8888/api/login"  --data='{"username":"test","passw
 
 
 
+
+
 sqlmap  -u  "http://localhost:8888/api/login"  --data='{"username":"test","password":"*"}'  --header="Content-Type: application/json"  --dbs
+
+
 
 
 
@@ -44,11 +52,17 @@ sqlmap  -u  "http://localhost:8888/api/login"  --data='{"username":"test","passw
 
 
 
+
+
 sqlmap  -u  "http://localhost:8888/api/login"  --data='{"username":"test","password":"*"}'  --header="Content-Type: application/json"  -D  public  --dump
 
 
 
+
+
 # ผลลัพธ์: สามารถดึงข้อมูลทุกตารางจาก public
+
+
 
 
 
@@ -66,7 +80,11 @@ sqlmap  -u  "http://localhost:8888/api/login"  --data='{"username":"test","passw
 
 
 
+
+
 sqlmap -u "http://localhost:8888/api/login" --data='{"username":"test","password":"*"}' --header="Content-Type: application/json" -D public --dump
+
+
 
 
 
@@ -120,7 +138,11 @@ Run Security Pipeline ใน GitHub Action โดยใช้คำสั่ง 
 
 
 
+
+
 next  15.5.1-canary.0  -  15.5.6
+
+
 
 
 
@@ -128,7 +150,11 @@ Severity:  critical
 
 
 
+
+
 Next.js  is  vulnerable  to  RCE  in  React  flight  protocol  -[https://github.com/advisories/GHSA-9qr9-h5gf-34mp](https://github.com/advisories/GHSA-9qr9-h5gf-34mp)
+
+
 
 
 
@@ -136,11 +162,17 @@ fix  available  via  `npm audit fix --force`
 
 
 
+
+
 Will  install  next@15.5.7,  which  is  outside  the  stated  dependency  range
 
 
 
+
+
 node_modules/next
+
+
 
 
 
@@ -166,7 +198,11 @@ node_modules/next
 
 
 
+
+
 "dependencies": {
+
+
 
 
 
@@ -174,7 +210,11 @@ node_modules/next
 
 
 
+
+
 }
+
+
 
 
 
@@ -186,7 +226,11 @@ node_modules/next
 
 ```bash
 
+
+
 npm  install  next@15.5.7  react@latest  react-dom@latest
+
+
 
 
 
@@ -228,7 +272,11 @@ https://github.com/phiraphongph/vulnshop-next/pull/3/files
 
 
 
+
+
 POST /api/purchase
+
+
 
 
 
@@ -236,7 +284,11 @@ Content-Type: application/json
 
 
 
+
+
 {
+
+
 
 
 
@@ -244,7 +296,11 @@ Content-Type: application/json
 
 
 
+
+
 "quantity": 1,
+
+
 
 
 
@@ -252,7 +308,11 @@ Content-Type: application/json
 
 
 
+
+
 }
+
+
 
 
 
@@ -346,7 +406,20 @@ response.cookies.set("session_token", user.username, {
 
 ### Remediation (วิธีการแก้)
 
-- เว้นไว้ก่อน
+- ปรับปรุง Cookie โดยกำหนดค่า `SameSite` ให้เป็น `Lax` เพื่อป้องกัน Browser ส่ง Cookie ไปยัง Server หาก Request นั้นมาจากโดเมนภายนอก
+- **Fixed Code**
+
+```ts
+response.cookies.set("session_token", user.username, {
+  httpOnly: false,
+
+  path: "/",
+
+  secure: true,
+
+  sameSite: "lax",
+});
+```
 
 - **Reference:**
 
@@ -374,7 +447,11 @@ https://github.com/phiraphongph/vulnshop-next/pull/4/files
 
 
 
+
+
 <img src=x onerror=alert("XSS_Hacked")>
+
+
 
 
 
