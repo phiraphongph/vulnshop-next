@@ -348,8 +348,9 @@ response.cookies.set("session_token", user.username, {
 
 - เว้นไว้ก่อน
 
-  - **Reference:**
-    https://github.com/phiraphongph/vulnshop-next/pull/4/files
+- **Reference:**
+
+https://github.com/phiraphongph/vulnshop-next/pull/4/files
 
 ## VULN-05: Stored Cross-Site Scripting (XSS)
 
