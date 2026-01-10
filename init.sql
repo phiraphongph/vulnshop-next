@@ -10,7 +10,7 @@ CREATE TABLE users (
 -- add users
 INSERT INTO users (username, password, is_admin, balance)
 VALUES 
-('testuser', 'testpass', FALSE, 100.00),
+('testuser', 'testpass', FALSE, 1000000.00),
 ('admin', 'adminpass', TRUE, 1000.00),
 ('hacker', 'hackerpass', FALSE, 0.00);
 

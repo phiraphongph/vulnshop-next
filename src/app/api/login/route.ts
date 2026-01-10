@@ -51,21 +51,21 @@ export async function POST(request: Request) {
         httpOnly: false,
         path: "/",
         secure: true,
-        sameSite: "none",
+        sameSite: "lax",
       });
 
       response.cookies.set("user_id", String(user.id), {
         httpOnly: false,
         path: "/",
         secure: true,
-        sameSite: "none",
+        sameSite: "lax",
       });
 
       response.cookies.set("is_admin", String(user.is_admin), {
         httpOnly: false,
         path: "/",
         secure: true,
-        sameSite: "none",
+        sameSite: "lax",
       });
 
       console.log(`[LOGIN SUCCESS] Cookie set for user: ${user.username}`);
